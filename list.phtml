@@ -16,7 +16,7 @@
 						$dropshipitems = Mage::getModel('supplier/dropshipitems')->getCollection();
 						$dropshipitems->addFieldToSelect('status');
 						$dropshipitems->addFieldToFilter('order_id', array('eq' => $order->getEntityId()));
-						$dropshipitems->addFieldToFilter('supplier_id', array('eq' => $supplierId);
+						$dropshipitems->addFieldToFilter('supplier_id', array('eq' => $supplierId));
 						$ship = false;
 						foreach ($dropshipitems as $dropshipitem){
 							$item = $dropshipitem->getData();
