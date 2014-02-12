@@ -166,13 +166,12 @@ class Magentomasters_Supplier_ShippingController extends Mage_Core_Controller_Fr
 	
 	}else  if($shiptype=='store'){
 
+		
 
-
-			$items = $order->getAllItems(); 
-			foreach($items as $item){
-				Mage::getModel('supplier/observer')->updateDropshipItemComplete($item->getOrderItemId());
+			foreach($order->getAllItems() as $k=>$orderItem){
+				Mage::getModel('supplier/observer')->updateDropshipItemComplete($orderItem->getProductId());
 			}
-
+			
 			$order->setStatus('processing_qc');
 			$order->addStatusToHistory($order->getStatus(), 'Order Processing QC and waiting for TaiguoMall shipping to customer.', false);
 			$order->save();
