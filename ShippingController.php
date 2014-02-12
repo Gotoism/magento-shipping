@@ -169,15 +169,18 @@ class Magentomasters_Supplier_ShippingController extends Mage_Core_Controller_Fr
 		
 
 			foreach($order->getAllItems() as $k=>$orderItem){
-				$orderItemID = $orderItem->getProductId();
-				if($itemsQty[$orderItemID]) {
-				Mage::getModel('supplier/observer')->updateDropshipItemComplete($orderItemID);
-				}
+				$productId = $orderItem->getProductId();
+					$table = Mage::getSingleton('core/resource')->getTableName('supplier_dropship_items');
+					$connect = Mage::getSingleton('core/resource')->getConnection('core_read');
+					$query = "UPDATE ".$table." SET status='5' WHERE order_id='".$orderId."' AND product_id='".$productId."' "; 
+					$connect->query($query);
 			}
 			
-			$order->setStatus('processing_qc');
-			$order->addStatusToHistory($order->getStatus(), 'Order Processing QC and waiting for TaiguoMall shipping to customer.', false);
-			$order->save();
+			if($order->getStatus()!='processing_qc'){
+				$order->setStatus('processing_qc');
+				$order->addStatusToHistory($order->getStatus(), 'Order Processing QC and waiting for TaiguoMall shipping to customer.', false);
+				$order->save();
+			}
 
 
 
