@@ -169,7 +169,10 @@ class Magentomasters_Supplier_ShippingController extends Mage_Core_Controller_Fr
 		
 
 			foreach($order->getAllItems() as $k=>$orderItem){
-				Mage::getModel('supplier/observer')->updateDropshipItemComplete($orderItem->getProductId());
+				$orderItemID = $orderItem->getProductId();
+				if($itemsQty[$orderItemID]) {
+				Mage::getModel('supplier/observer')->updateDropshipItemComplete($orderItemID);
+				}
 			}
 			
 			$order->setStatus('processing_qc');
