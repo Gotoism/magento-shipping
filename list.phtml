@@ -1,0 +1,46 @@
+<?php	$orders = $this->getOrders(); echo $this->getChildHtml("order_list_toolbar"); ?>
+
+<div class="supllier_admin_content  supplier_admin_order_list">
+	<table class="supplier_order_list st" style="width:100%" >
+	    <tr class="menu_font_style " id="padd">
+	        <th><?php echo $this->__('Ordernumber') ?></th>
+	        <th><?php echo $this->__('Name') ?></th>
+	        <th><?php echo $this->__('OrderDate') ?></th>
+	        <th><?php echo $this->__('Status') ?></th>
+	        <th><?php echo $this->__('Action') ?></th>
+	    </tr>
+	    <?php $i = 0; foreach($orders as $order) : $i++;  ?>
+
+		<?php 
+/*
+						$dropshipitems = Mage::getModel('supplier/dropshipitems')->getCollection();
+						$dropshipitems->addFieldToSelect('status');
+						$dropshipitems->addFieldToFilter('order_id', array('eq' => $order->getEntityId()));
+						$ship = false;
+						$status = 1;
+						foreach ($dropshipitems as $dropshipitem){
+							$item = $dropshipitem->getData();
+							if($item[status] == 5){
+								$ship =true;
+								$status = 5;
+							}
+						}
+*/
+		?>
+	    <tr class="position  <?php if(($i%2) == 0){?>even<?}else{?>odd<?php } ?>"> 
+	        <td><?php echo $order->getRealOrderId(); ?></td>
+	        <td><?php echo $order->getCustomerName(); ?></td>
+	        <td><?php echo Mage::helper('core')->formatDate($order->getCreatedAt(), 'short', $showTime=true); ?></td>
+	        <td><?php if($this->canShip($order->getEntityId())): ?><?php echo $this->__('Waiting'); ?><?php else: ?><?php echo ($order['status'] == 'processing_qc'? $this->__('Complete QC'): $this->__('Complete')) ?><?php endif;  ?> </td>
+	        <td>
+	            <a href="<?php echo Mage::getUrl('supplier/order/view/' ) . 'order_id/' . $order->getEntityId(); ?>" class="label label-primary"><?php echo $this->__('View') ?></a>
+	            <?php 
+
+	            if($this->canShip($order->getEntityId())): ?><a href="<?php echo Mage::getUrl('supplier/shipping/ship/' ) . 'order_id/' . $order->getEntityId()  ?>/?shiptype=customer" class="label label-success"><?php echo $this->__('Ship to Customer') ?></a> <a href="<?php echo Mage::getUrl('supplier/shipping/ship/' ) . 'order_id/' . $order->getEntityId()  ?>/?shiptype=store" class="label label-info"><?php echo $this->__('Ship to Store') ?></a><?php endif; 
+
+	            ?>
+	        </td>
+	    </tr>
+	    <?php endforeach; ?>
+	</table>
+</div>
