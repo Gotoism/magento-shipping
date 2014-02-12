@@ -97,46 +97,47 @@ class Magentomasters_Supplier_ShippingController extends Mage_Core_Controller_Fr
         $includeComment = false;
 		$comment = "The order is shipped by the supplier";  // commend we can set when save
         $order = Mage::getModel('sales/order')->load($orderId);
-        $convertor = Mage::getModel('sales/convert_order');
-        $shipment = $convertor->toShipment($order);
-
-		//  prepare shipment item before save
-		///////////////////////////////////////////////////////////////////////////////////////////////////////////
-        foreach ($order->getAllItems() as $k=>$orderItem) {
-            	
-			if (!$orderItem->getQtyToShip()) {
-        		continue;
-        	}
-			if ($orderItem->getIsVirtual()) {
-           		continue;
-        	}
-
-			$item = $convertor->itemToShipmentItem($orderItem);	
-			
-			$productId = $orderItem->getProductId();
-		
-			if($itemsQty[$productId]) {
-                $item->setQty($itemsQty[$productId]);
-                $shipment->addItem($item);
-            }
-        }
-        
-        $carrierTitle = NULL;
-
-        if ($carrier == 'custom') {
-            $carrierTitle = 'Playtimes';
-        }
-        foreach ($tracking as $data) {
-            $track = Mage::getModel('sales/order_shipment_track')->addData($data);
-            $shipment->addTrack($track);
-        }
-
-	     $shipment->register();
+ 
    ///////////////////////////////////////////////////////////////////////////////////////////////////////////	     
 
 
 	if($shiptype=='customer'){
-        
+	       $convertor = Mage::getModel('sales/convert_order');
+	        $shipment = $convertor->toShipment($order);
+	
+			//  prepare shipment item before save
+			///////////////////////////////////////////////////////////////////////////////////////////////////////////
+	        foreach ($order->getAllItems() as $k=>$orderItem) {
+	            	
+				if (!$orderItem->getQtyToShip()) {
+	        		continue;
+	        	}
+				if ($orderItem->getIsVirtual()) {
+	           		continue;
+	        	}
+	
+				$item = $convertor->itemToShipmentItem($orderItem);	
+				
+				$productId = $orderItem->getProductId();
+			
+				if($itemsQty[$productId]) {
+	                $item->setQty($itemsQty[$productId]);
+	                $shipment->addItem($item);
+	            }
+	        }
+	        
+	        $carrierTitle = NULL;
+	
+	        if ($carrier == 'custom') {
+	            $carrierTitle = 'Playtimes';
+	        }
+	        foreach ($tracking as $data) {
+	            $track = Mage::getModel('sales/order_shipment_track')->addData($data);
+	            $shipment->addTrack($track);
+	        }
+	
+		     $shipment->register();
+		     
 	        $shipment->addComment($comment, $email && $includeComment);
 	        $shipment->setEmailSent(true);
 	        //$shipment->sendEmail($email, ($includeComment ? $comment : ''));
@@ -172,15 +173,10 @@ class Magentomasters_Supplier_ShippingController extends Mage_Core_Controller_Fr
 				Mage::getModel('supplier/observer')->updateDropshipItemComplete($item->getOrderItemId());
 			}
 
-/*
-			foreach($shipment->getAllItems() as $item){
-				Mage::getModel('supplier/observer')->updateDropshipItemComplete($item->getOrderItemId());
-			}
-*/
-/*
-			$shipment->getOrder()->setStatus('processing_qc')->addStatusToHistory($order->getStatus(), 'Order Processing QC and waiting for TaiguoMall shipping to customer.', false)->save();
-			$shipment;
-*/
+			$order->setStatus('processing_qc');
+			$order->addStatusToHistory($order->getStatus(), 'Order Processing QC and waiting for TaiguoMall shipping to customer.', false);
+			$order->save();
+
 
 
 
