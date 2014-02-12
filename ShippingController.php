@@ -168,7 +168,7 @@ class Magentomasters_Supplier_ShippingController extends Mage_Core_Controller_Fr
 
 
 
-			$items = $shipment->getAllItems(); 
+			$items = $order->getAllItems(); 
 			foreach($items as $item){
 				Mage::getModel('supplier/observer')->updateDropshipItemComplete($item->getOrderItemId());
 			}
