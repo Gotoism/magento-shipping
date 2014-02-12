@@ -18,23 +18,25 @@
 						$dropshipitems->addFieldToFilter('order_id', array('eq' => $order->getEntityId()));
 						$dropshipitems->addFieldToFilter('supplier_id', array('eq' => $supplierId));
 						$ship = false;
+						$status = 0;
 						foreach ($dropshipitems as $dropshipitem){
 							$item = $dropshipitem->getData();
 							if($item[status] == 5){
 								$ship =true;
 							}
+							$status = $item[status];
 						}
 
 		?>
 	    <tr class="position  <?php if(($i%2) == 0){?>even<?}else{?>odd<?php } ?>"> 
-	        <td><?php echo $order->getRealOrderId(); ?></td>
+	        <td><?php echo $order->getRealOrderId().' - status : '.$status; ?></td>
 	        <td><?php echo $order->getCustomerName(); ?></td>
 	        <td><?php echo Mage::helper('core')->formatDate($order->getCreatedAt(), 'short', $showTime=true); ?></td>
 	        <td><?php if($this->canShip($order->getEntityId())): ?><?php echo ($ship?$this->__('Waiting Store QC'):$this->__('Waiting')); ?><?php else: ?><?php echo ($order['status'] == 'processing_qc'? $this->__('Complete QC'): $this->__('Complete')) ?><?php endif;  ?> </td>
 	        <td>
 	            <a href="<?php echo Mage::getUrl('supplier/order/view/' ) . 'order_id/' . $order->getEntityId(); ?>" class="label label-primary"><?php echo $this->__('View') ?></a>
 	            <?php 
-				if($ship){
+				if(!$ship){
 	            	if($this->canShip($order->getEntityId())): 
 	            	?>
 	            	<a href="<?php echo Mage::getUrl('supplier/shipping/ship/' ) . 'order_id/' . $order->getEntityId()  ?>/?shiptype=customer" class="label label-success"><?php echo $this->__('Ship to Customer') ?></a> <a href="<?php echo Mage::getUrl('supplier/shipping/ship/' ) . 'order_id/' . $order->getEntityId()  ?>/?shiptype=store" class="label label-info"><?php echo $this->__('Ship to Store') ?></a><?php 
